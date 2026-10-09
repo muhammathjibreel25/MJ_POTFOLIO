@@ -1,0 +1,1543 @@
+<!-- Mirrored into public/ for instant Vite dev server access at /antigravity.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google Antigravity — Modern 2D Physics Experience</title>
+  
+  <!-- Matter.js 2D Physics Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+
+  <!-- Google Fonts: Roboto & Google Sans style -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Plus+Jakarta+Sans:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ==========================================================================
+       RESET & BASE THEME
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #202124;
+      color: #e8eaed;
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      position: relative;
+    }
+
+    /* Subtle background grid pattern */
+    body::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(66, 133, 244, 0.04) 0%, transparent 60%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 32px 32px, 32px 32px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Physical Elements Container */
+    #physics-world {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Base Physical Rigid Body Styling */
+    .physics-body {
+      position: absolute;
+      left: 0;
+      top: 0;
+      pointer-events: auto;
+      cursor: grab;
+      will-change: transform;
+      transform-origin: center center;
+      touch-action: none;
+    }
+
+    .physics-body:active {
+      cursor: grabbing;
+    }
+
+    /* Material You elevation & lighting */
+    .elevation-1 {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    .elevation-2 {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.25);
+    }
+    .elevation-hover:hover {
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* ==========================================================================
+       GOOGLE HEADER BAR
+       ========================================================================== */
+    .google-nav-link {
+      color: #bdc1c6;
+      font-size: 14px;
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      transition: background 0.15s, color 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(48, 49, 52, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+    }
+
+    .google-nav-link:hover {
+      background: rgba(60, 64, 67, 0.9);
+      color: #ffffff;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(48, 49, 52, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e8eaed;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .icon-btn:hover {
+      background: rgba(60, 64, 67, 0.95);
+    }
+
+    .avatar-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4285f4, #34a853);
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* ==========================================================================
+       GOOGLE LOGO & SEARCH BAR
+       ========================================================================== */
+    .google-logo-wrap {
+      padding: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+    }
+
+    .google-logo-svg {
+      width: 272px;
+      height: 92px;
+      display: block;
+    }
+
+    /* Search Bar with Material You Pill */
+    .search-box-pill {
+      width: 580px;
+      max-width: 90vw;
+      height: 52px;
+      background: #303134;
+      border: 1px solid #5f6368;
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .search-box-pill:hover,
+    .search-box-pill:focus-within {
+      background: #3c4043;
+      border-color: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    .search-icon {
+      color: #9aa0a6;
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #e8eaed;
+      font-size: 16px;
+      font-family: inherit;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+
+    .search-input::placeholder {
+      color: #9aa0a6;
+    }
+
+    .search-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .search-action-btn {
+      background: none;
+      border: none;
+      padding: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8ab4f8;
+      border-radius: 50%;
+      transition: background 0.15s;
+    }
+
+    .search-action-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Google Action Buttons */
+    .google-btn {
+      background: #303134;
+      color: #e8eaed;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .google-btn:hover {
+      background: #3c4043;
+      border-color: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    }
+
+    .google-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* Language disclaimer pill */
+    .lang-pill {
+      font-size: 13px;
+      color: #bdc1c6;
+      background: rgba(48, 49, 52, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 14px;
+      border-radius: 16px;
+      backdrop-filter: blur(8px);
+    }
+
+    .lang-link {
+      color: #8ab4f8;
+      text-decoration: none;
+      margin: 0 4px;
+    }
+
+    .lang-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer links */
+    .footer-bar-pill {
+      background: rgba(23, 23, 23, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      color: #9aa0a6;
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      backdrop-filter: blur(10px);
+    }
+
+    .footer-bar-pill a {
+      color: #9aa0a6;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-bar-pill a:hover {
+      color: #e8eaed;
+    }
+
+    /* ==========================================================================
+       INTERACTIVE CONTROL PANEL (FLOATING HUD)
+       ========================================================================== */
+    #hud-panel {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 1000;
+      width: 310px;
+      background: rgba(30, 34, 45, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
+      overflow: hidden;
+    }
+
+    #hud-panel.minimized .hud-body {
+      display: none;
+    }
+
+    .hud-header {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+    }
+
+    .hud-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #4285f4, #34a853, #fbbc05);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hud-beacon {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #34a853;
+      box-shadow: 0 0 10px #34a853;
+      display: inline-block;
+      animation: pulse-beacon 2s infinite;
+    }
+
+    @keyframes pulse-beacon {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.6; }
+    }
+
+    .hud-toggle-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      color: #cbd5e1;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .hud-body {
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Slider Group */
+    .hud-control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .hud-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+
+    .hud-value-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: rgba(66, 133, 244, 0.15);
+      color: #8ab4f8;
+      border: 1px solid rgba(66, 133, 244, 0.3);
+    }
+
+    .hud-slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.12);
+      outline: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .hud-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #8ab4f8;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(138, 180, 248, 0.6);
+      transition: transform 0.1s, background 0.2s;
+    }
+
+    .hud-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      background: #ffffff;
+    }
+
+    /* Button Actions Grid */
+    .hud-btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .hud-action-btn {
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.05);
+      color: #f1f5f9;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .hud-action-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .hud-action-btn:active {
+      transform: translateY(1px);
+    }
+
+    .hud-action-btn.btn-explosion {
+      background: linear-gradient(135deg, rgba(234, 67, 53, 0.25), rgba(251, 188, 5, 0.2));
+      border-color: rgba(234, 67, 53, 0.4);
+      color: #ff8a80;
+    }
+
+    .hud-action-btn.btn-explosion:hover {
+      background: linear-gradient(135deg, rgba(234, 67, 53, 0.4), rgba(251, 188, 5, 0.3));
+      box-shadow: 0 0 20px rgba(234, 67, 53, 0.35);
+    }
+
+    .hud-action-btn.btn-blackhole {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(66, 133, 244, 0.2));
+      border-color: rgba(168, 85, 247, 0.4);
+      color: #c084fc;
+    }
+
+    .hud-action-btn.btn-blackhole.active {
+      background: linear-gradient(135deg, #9333ea, #4f46e5);
+      color: #ffffff;
+      box-shadow: 0 0 24px rgba(147, 51, 234, 0.6);
+      border-color: #d8b4fe;
+      animation: vortex-pulse 1.5s infinite;
+    }
+
+    @keyframes vortex-pulse {
+      0%, 100% { box-shadow: 0 0 15px rgba(147, 51, 234, 0.5); }
+      50% { box-shadow: 0 0 30px rgba(147, 51, 234, 0.85); }
+    }
+
+    .hud-action-btn.btn-reset {
+      grid-column: span 2;
+      background: linear-gradient(135deg, rgba(52, 168, 83, 0.2), rgba(66, 133, 244, 0.2));
+      border-color: rgba(52, 168, 83, 0.4);
+      color: #81c995;
+    }
+
+    .hud-action-btn.btn-reset:hover {
+      background: linear-gradient(135deg, rgba(52, 168, 83, 0.35), rgba(66, 133, 244, 0.35));
+      box-shadow: 0 0 20px rgba(52, 168, 83, 0.35);
+    }
+
+    /* Sound indicator in HUD */
+    .hud-sound-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .sound-badge-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 3px 8px;
+      border-radius: 6px;
+      color: #38bdf8;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+    }
+
+    /* ==========================================================================
+       BLACK HOLE SINGULARITY VORTEX FX OVERLAY
+       ========================================================================== */
+    #black-hole-fx {
+      position: fixed;
+      pointer-events: none;
+      width: 140px;
+      height: 140px;
+      margin-left: -70px;
+      margin-top: -70px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,0,0,0.95) 20%, rgba(147,51,234,0.4) 50%, rgba(56,189,248,0) 75%);
+      box-shadow: 0 0 50px rgba(168, 85, 247, 0.6), inset 0 0 20px #000;
+      z-index: 5;
+      display: none;
+      animation: spin-vortex 4s linear infinite;
+    }
+
+    @keyframes spin-vortex {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Shockwave blast effect */
+    .shockwave {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      border: 2px solid rgba(234, 67, 53, 0.8);
+      box-shadow: 0 0 30px rgba(251, 188, 5, 0.5);
+      z-index: 999;
+      animation: expand-shockwave 0.65s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+    }
+
+    @keyframes expand-shockwave {
+      0% {
+        width: 10px;
+        height: 10px;
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+      100% {
+        width: 800px;
+        height: 800px;
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+      }
+    }
+
+    /* Notification Toast */
+    #toast-msg {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(30, 34, 45, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: #e2e8f0;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(12px);
+      z-index: 2000;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #toast-msg.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Physical World DOM Container -->
+  <div id="physics-world">
+
+    <!-- 1. Header Left: About & Store -->
+    <div id="elem-nav-left" class="physics-body">
+      <div style="display: flex; gap: 8px;">
+        <a href="#about" class="google-nav-link" onclick="handleLinkClick(event, 'About')">About</a>
+        <a href="#store" class="google-nav-link" onclick="handleLinkClick(event, 'Store')">Store</a>
+      </div>
+    </div>
+
+    <!-- 2. Header Right: Gmail, Images, Apps, Profile -->
+    <div id="elem-nav-right" class="physics-body">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <a href="#gmail" class="google-nav-link" onclick="handleLinkClick(event, 'Gmail')">Gmail</a>
+        <a href="#images" class="google-nav-link" onclick="handleLinkClick(event, 'Images')">Images</a>
+        <div class="icon-btn" title="Google apps" onclick="handleLinkClick(event, 'Google Apps')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 12c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+          </svg>
+        </div>
+        <div class="avatar-btn" title="Google Account">G</div>
+      </div>
+    </div>
+
+    <!-- 3. Google Logo (Authentic Material SVG) -->
+    <div id="elem-logo" class="physics-body">
+      <div class="google-logo-wrap">
+        <svg class="google-logo-svg" viewBox="0 0 272 92" fill="none">
+          <!-- G (Blue) -->
+          <path d="M115.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18C71.25 34.32 81.24 25 93.5 25s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44s-12.51 5.46-12.51 13.44c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z" fill="#EA4335"/>
+          <!-- O (Red) -->
+          <path d="M163.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18c0-12.85 9.99-22.18 22.25-22.18s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44s-12.51 5.46-12.51 13.44c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z" fill="#FBBC05"/>
+          <!-- O (Yellow) -->
+          <path d="M209.75 26.34v39.82c0 16.38-9.66 23.07-21.08 23.07-10.75 0-17.22-7.19-19.66-13.07l8.48-3.53c1.51 3.61 5.21 7.87 11.17 7.87 7.31 0 11.84-4.51 11.84-13.01v-3.19h-.34c-2.18 2.69-6.38 5.04-11.68 5.04-11.09 0-21.25-9.66-21.25-22.09 0-12.52 10.16-22.26 21.25-22.26 5.29 0 9.49 2.35 11.68 4.96h.34v-3.61h9.25zm-8.56 20.92c0-7.81-5.21-13.52-11.84-13.52-6.72 0-12.35 5.71-12.35 13.52 0 7.73 5.63 13.36 12.35 13.36 6.63 0 11.84-5.63 11.84-13.36z" fill="#4285F4"/>
+          <!-- G (Green/Blue) -->
+          <path d="M225 3v65h-9.5V3h9.5z" fill="#34A853"/>
+          <!-- L (Green) -->
+          <path d="M262.02 54.48l7.56 5.04c-2.44 3.61-8.32 9.84-18.48 9.84-12.6 0-22.01-9.74-22.01-22.18 0-13.19 9.49-22.18 20.92-22.18 11.51 0 17.14 9.16 18.98 14.11l1.01 2.52-29.65 12.28c2.27 4.45 5.8 6.72 10.75 6.72 4.96 0 8.4-2.44 10.92-6.15zm-23.27-8.15l19.82-8.23c-1.09-2.77-4.37-4.7-8.32-4.7-4.95 0-11.84 4.37-11.5 12.93z" fill="#EA4335"/>
+          <!-- E (Red) -->
+          <path d="M35.37 41.52v9.33h22.75c-.67 5.29-2.44 9.16-5.21 11.93-3.28 3.28-8.4 6.89-17.54 6.89-13.94 0-24.78-11.26-24.78-25.2s10.84-25.2 24.78-25.2c7.56 0 13.1 2.94 17.22 6.89l6.64-6.64C53.68 27.27 45.95 23 35.37 23 16.14 23 .58 38.56.58 57.79s15.56 34.79 34.79 34.79c10.33 0 18.14-3.36 24.27-9.66 6.3-6.3 8.32-15.2 8.32-22.43 0-2.18-.17-4.28-.5-6.97H35.37z" fill="#4285F4"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 4. Search Bar Pill (Functional Input) -->
+    <div id="elem-search" class="physics-body">
+      <div class="search-box-pill">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+        </svg>
+
+        <input 
+          id="main-search-input" 
+          type="text" 
+          class="search-input" 
+          placeholder="Search Google or type a URL..." 
+          autocomplete="off" 
+          spellcheck="false"
+        />
+
+        <div class="search-actions">
+          <!-- Voice Search Mic Icon -->
+          <button type="button" class="search-action-btn" title="Search by voice" onclick="handleVoiceClick(event)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+              <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+            </svg>
+          </button>
+          <!-- Google Lens Icon -->
+          <button type="button" class="search-action-btn" title="Search by image" onclick="handleLensClick(event)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
+              <path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Search Action Buttons -->
+    <div id="elem-btn-search" class="physics-body">
+      <button type="button" class="google-btn" onclick="executeGoogleSearch()">Google Search</button>
+    </div>
+
+    <div id="elem-btn-lucky" class="physics-body">
+      <button type="button" class="google-btn" onclick="executeLuckySearch()">I'm Feeling Lucky</button>
+    </div>
+
+    <!-- 6. Language selector pill -->
+    <div id="elem-lang" class="physics-body">
+      <div class="lang-pill">
+        Google offered in: 
+        <a href="#es" class="lang-link" onclick="handleLinkClick(event, 'Español')">Español</a>
+        <a href="#fr" class="lang-link" onclick="handleLinkClick(event, 'Français')">Français</a>
+        <a href="#de" class="lang-link" onclick="handleLinkClick(event, 'Deutsch')">Deutsch</a>
+        <a href="#ta" class="lang-link" onclick="handleLinkClick(event, 'Tamil')">தமிழ்</a>
+      </div>
+    </div>
+
+    <!-- 7. Footer Location -->
+    <div id="elem-footer-loc" class="physics-body">
+      <div class="footer-bar-pill">
+        <span style="font-weight: 500; color: #e8eaed;">Earth</span> • Gravity Simulator Active
+      </div>
+    </div>
+
+    <!-- 8. Footer Links Left -->
+    <div id="elem-footer-left" class="physics-body">
+      <div class="footer-bar-pill">
+        <a href="#about" onclick="handleLinkClick(event, 'About')">About</a>
+        <a href="#advertising" onclick="handleLinkClick(event, 'Advertising')">Advertising</a>
+        <a href="#business" onclick="handleLinkClick(event, 'Business')">Business</a>
+        <a href="#how" onclick="handleLinkClick(event, 'How Search works')">How Search works</a>
+      </div>
+    </div>
+
+    <!-- 9. Footer Links Right -->
+    <div id="elem-footer-right" class="physics-body">
+      <div class="footer-bar-pill">
+        <a href="#privacy" onclick="handleLinkClick(event, 'Privacy')">Privacy</a>
+        <a href="#terms" onclick="handleLinkClick(event, 'Terms')">Terms</a>
+        <a href="#settings" onclick="handleLinkClick(event, 'Settings')">Settings</a>
+      </div>
+    </div>
+
+  </div> <!-- /physics-world -->
+
+
+  <!-- Interactive Control Panel (Floating Glassmorphism HUD) -->
+  <aside id="hud-panel" class="elevation-2" aria-label="Antigravity Controls">
+    <div class="hud-header" onclick="toggleHud()">
+      <div class="hud-title">
+        <span class="hud-beacon"></span>
+        <span>Antigravity HUD</span>
+      </div>
+      <button type="button" class="hud-toggle-btn" id="hud-min-btn" title="Toggle HUD panel">
+        −
+      </button>
+    </div>
+
+    <div class="hud-body">
+      <!-- Gravity Slider -->
+      <div class="hud-control-group">
+        <div class="hud-label-row">
+          <span>Gravity Control</span>
+          <span class="hud-value-badge" id="hud-gravity-val">1.0G (Normal)</span>
+        </div>
+        <input 
+          id="slider-gravity" 
+          type="range" 
+          class="hud-slider" 
+          min="-1" 
+          max="2.5" 
+          step="0.1" 
+          value="1" 
+        />
+      </div>
+
+      <!-- Bounciness (Elasticity) Slider -->
+      <div class="hud-control-group">
+        <div class="hud-label-row">
+          <span>Bounciness (Restitution)</span>
+          <span class="hud-value-badge" id="hud-bounce-val">0.70</span>
+        </div>
+        <input 
+          id="slider-bounce" 
+          type="range" 
+          class="hud-slider" 
+          min="0" 
+          max="1" 
+          step="0.05" 
+          value="0.7" 
+        />
+      </div>
+
+      <!-- Action Buttons Grid -->
+      <div class="hud-btn-grid">
+        <button type="button" class="hud-action-btn btn-explosion" onclick="triggerExplosion()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.784 1.399 8.167-7.333-3.856-7.333 3.856 1.399-8.167-5.934-5.784 8.2-1.192zm0 5.702l-2.223 4.505-4.972.723 3.598 3.507-.849 4.951 4.446-2.338 4.446 2.338-.849-4.951 3.598-3.507-4.972-.723z"/>
+          </svg>
+          <span>Explosion</span>
+        </button>
+
+        <button type="button" class="hud-action-btn btn-blackhole" id="btn-blackhole" onclick="toggleBlackHole()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-12a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>
+          </svg>
+          <span id="blackhole-label">Black Hole</span>
+        </button>
+
+        <button type="button" class="hud-action-btn btn-reset" onclick="resetLayout()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+          </svg>
+          <span>Reset Google Layout</span>
+        </button>
+      </div>
+
+      <!-- Sound Toggle -->
+      <div class="hud-sound-toggle">
+        <span>Sound FX: <strong id="sound-status" style="color: #4ade80;">Active</strong></span>
+        <button type="button" class="sound-badge-btn" onclick="toggleSound()">
+          Mute / Unmute
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Singularity Black Hole Visual Vortex -->
+  <div id="black-hole-fx"></div>
+
+  <!-- Interactive Toast Notification -->
+  <div id="toast-msg"></div>
+
+
+  <!-- ==========================================================================
+       PHYSICS ENGINE & APPLICATION LOGIC
+       ========================================================================== */
+  <script>
+    // Module aliases from Matter.js
+    const { Engine, World, Bodies, Body, Vector, Events, Mouse, MouseConstraint } = Matter;
+
+    // Application State
+    let engine;
+    let world;
+    let walls = [];
+    let physicalItems = [];
+    let mouseConstraint;
+    let isBlackHoleActive = false;
+    let isResetting = false;
+    let soundEnabled = true;
+    let audioCtx = null;
+    let mousePosition = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+
+    // Initial Layout Blueprint for Clean Reset
+    const initialTransforms = new Map();
+
+    /* ==========================================================================
+       SYNTHESIZED WEB AUDIO API SYSTEM (Zero external assets needed)
+       ========================================================================== */
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          audioCtx = new AudioContextClass();
+        }
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // Play subtle impact thud when bodies hit boundaries or each other
+    function playThud(intensity = 0.5) {
+      if (!soundEnabled) return;
+      initAudio();
+      if (!audioCtx) return;
+
+      try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        const clampedIntensity = Math.min(Math.max(intensity, 0.1), 1.0);
+        const startFreq = 90 + clampedIntensity * 70;
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(startFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(28, now + 0.12);
+
+        gain.gain.setValueAtTime(clampedIntensity * 0.28, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.13);
+      } catch (err) {
+        // Ignore audio errors gracefully
+      }
+    }
+
+    // Play whoosh when fling speed is high
+    function playWhoosh(speed = 10) {
+      if (!soundEnabled) return;
+      initAudio();
+      if (!audioCtx) return;
+
+      try {
+        const now = audioCtx.currentTime;
+        const bufferSize = audioCtx.sampleRate * 0.18;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(450, now);
+        filter.frequency.exponentialRampToValueAtTime(1400, now + 0.09);
+        filter.frequency.exponentialRampToValueAtTime(300, now + 0.18);
+        filter.Q.value = 3.0;
+
+        const gain = audioCtx.createGain();
+        const vol = Math.min(speed / 35, 0.35);
+        gain.gain.setValueAtTime(0.01, now);
+        gain.gain.linearRampToValueAtTime(vol, now + 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        noise.start(now);
+      } catch (err) {}
+    }
+
+    // Play explosion sound boom
+    function playExplosionSound() {
+      if (!soundEnabled) return;
+      initAudio();
+      if (!audioCtx) return;
+
+      try {
+        const now = audioCtx.currentTime;
+        // Sub boom
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(160, now);
+        osc.frequency.exponentialRampToValueAtTime(30, now + 0.45);
+
+        gain.gain.setValueAtTime(0.6, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.46);
+      } catch (err) {}
+    }
+
+    // Play pleasant chime on layout reset
+    function playResetChime() {
+      if (!soundEnabled) return;
+      initAudio();
+      if (!audioCtx) return;
+
+      try {
+        const now = audioCtx.currentTime;
+        const freqs = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        freqs.forEach((idx, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          const noteTime = now + i * 0.08;
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(idx, noteTime);
+
+          gain.gain.setValueAtTime(0.001, noteTime);
+          gain.gain.linearRampToValueAtTime(0.18, noteTime + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, noteTime + 0.4);
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start(noteTime);
+          osc.stop(noteTime + 0.42);
+        });
+      } catch (err) {}
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const statusEl = document.getElementById('sound-status');
+      if (statusEl) {
+        statusEl.textContent = soundEnabled ? 'Active' : 'Muted';
+        statusEl.style.color = soundEnabled ? '#4ade80' : '#f87171';
+      }
+      showToast(soundEnabled ? '🔊 Audio Synthesizer Enabled' : '🔇 Audio Muted');
+    }
+
+    /* ==========================================================================
+       SETUP INITIAL AUTHENTIC GOOGLE HOME LAYOUT
+       ========================================================================== */
+    function positionElementsInitially() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      // Map elements with exact natural coordinates
+      const layoutMap = {
+        'elem-nav-left': { left: 24, top: 20 },
+        'elem-nav-right': { right: 24, top: 20 },
+        'elem-logo': { centerX: true, top: Math.max(h * 0.16, 70) },
+        'elem-search': { centerX: true, top: Math.max(h * 0.16, 70) + 114 },
+        'elem-btn-search': { centerXOffset: -76, top: Math.max(h * 0.16, 70) + 186 },
+        'elem-btn-lucky': { centerXOffset: 76, top: Math.max(h * 0.16, 70) + 186 },
+        'elem-lang': { centerX: true, top: Math.max(h * 0.16, 70) + 242 },
+        'elem-footer-loc': { centerX: true, bottom: 64 },
+        'elem-footer-left': { left: 24, bottom: 20 },
+        'elem-footer-right': { right: 24, bottom: 20 }
+      };
+
+      Object.entries(layoutMap).forEach(([id, pos]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        // Reset transforms temporarily to calculate natural size
+        el.style.transform = 'none';
+        const rect = el.getBoundingClientRect();
+
+        let x = 0;
+        let y = 0;
+
+        if (pos.left !== undefined) x = pos.left;
+        else if (pos.right !== undefined) x = w - rect.width - pos.right;
+        else if (pos.centerX) x = (w - rect.width) / 2;
+        else if (pos.centerXOffset !== undefined) x = (w - rect.width) / 2 + pos.centerXOffset;
+
+        if (pos.top !== undefined) y = pos.top;
+        else if (pos.bottom !== undefined) y = h - rect.height - pos.bottom;
+
+        // Save reference coordinates for smooth reset animation
+        initialTransforms.set(id, {
+          x: x + rect.width / 2,
+          y: y + rect.height / 2,
+          width: rect.width,
+          height: rect.height,
+          angle: 0
+        });
+
+        // Set initial DOM placement
+        el.style.transform = `translate3d(${x}px, ${y}px, 0px)`;
+      });
+    }
+
+    /* ==========================================================================
+       CREATE RIGID BODIES & MATTER.JS ENGINE
+       ========================================================================== */
+    function initPhysics() {
+      // 1. Create Engine & World
+      engine = Engine.create({
+        gravity: { x: 0, y: 1.0, scale: 0.001 }
+      });
+      world = engine.world;
+
+      // 2. Position elements in classic layout
+      positionElementsInitially();
+
+      // 3. Create Boundary Walls around viewport
+      createWalls();
+
+      // 4. Convert all UI components into rigid bodies with mass, bounce & friction
+      physicalItems = [];
+      const currentRestitution = parseFloat(document.getElementById('slider-bounce').value) || 0.7;
+
+      initialTransforms.forEach((data, id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        const body = Bodies.rectangle(data.x, data.y, data.width, data.height, {
+          restitution: currentRestitution,
+          friction: 0.12,
+          frictionAir: 0.015,
+          density: 0.002,
+          chamfer: { radius: 8 }
+        });
+
+        body.elementId = id;
+        body.domElement = el;
+        physicalItems.push({ body, el, width: data.width, height: data.height });
+        World.add(world, body);
+      });
+
+      // 5. Setup Mouse Constraint for accurate clicking, dragging & flinging
+      setupMouseInteraction();
+
+      // 6. Setup Collision Audio Feedback
+      Events.on(engine, 'collisionStart', (event) => {
+        event.pairs.forEach((pair) => {
+          const vA = pair.bodyA.velocity;
+          const vB = pair.bodyB.velocity;
+          const relSpeed = Math.hypot(vA.x - vB.x, vA.y - vB.y);
+          if (relSpeed > 1.2) {
+            playThud(relSpeed / 12);
+          }
+        });
+      });
+
+      // 7. Start Engine Render Loop
+      requestAnimationFrame(physicsLoop);
+    }
+
+    /* Boundary Walls around the viewport (thick enough to prevent tunneling) */
+    function createWalls() {
+      if (walls.length > 0) {
+        World.remove(world, walls);
+        walls = [];
+      }
+
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const wallThickness = 240;
+
+      // Bottom Floor
+      const ground = Bodies.rectangle(w / 2, h + wallThickness / 2, w * 3, wallThickness, {
+        isStatic: true,
+        restitution: 0.7,
+        friction: 0.2
+      });
+
+      // Top Ceiling
+      const ceiling = Bodies.rectangle(w / 2, -wallThickness / 2, w * 3, wallThickness, {
+        isStatic: true,
+        restitution: 0.7,
+        friction: 0.2
+      });
+
+      // Left Wall
+      const leftWall = Bodies.rectangle(-wallThickness / 2, h / 2, wallThickness, h * 3, {
+        isStatic: true,
+        restitution: 0.7,
+        friction: 0.2
+      });
+
+      // Right Wall
+      const rightWall = Bodies.rectangle(w + wallThickness / 2, h / 2, wallThickness, h * 3, {
+        isStatic: true,
+        restitution: 0.7,
+        friction: 0.2
+      });
+
+      walls = [ground, ceiling, leftWall, rightWall];
+      World.add(world, walls);
+    }
+
+    /* Mouse dragging, grabbing, and flinging interaction */
+    function setupMouseInteraction() {
+      const mouse = Mouse.create(document.body);
+      
+      mouseConstraint = MouseConstraint.create(engine, {
+        mouse: mouse,
+        constraint: {
+          stiffness: 0.22,
+          damping: 0.1,
+          render: { visible: false }
+        }
+      });
+
+      World.add(world, mouseConstraint);
+
+      // Track pointer velocity for fling whoosh sound
+      let lastDragPos = { x: 0, y: 0 };
+      let lastDragTime = performance.now();
+
+      Events.on(mouseConstraint, 'startdrag', (evt) => {
+        initAudio();
+        lastDragPos = { x: evt.mouse.position.x, y: evt.mouse.position.y };
+        lastDragTime = performance.now();
+      });
+
+      Events.on(mouseConstraint, 'enddrag', (evt) => {
+        const now = performance.now();
+        const dt = Math.max((now - lastDragTime) / 1000, 0.016);
+        const dx = evt.mouse.position.x - lastDragPos.x;
+        const dy = evt.mouse.position.y - lastDragPos.y;
+        const dragSpeed = Math.hypot(dx, dy) / (dt * 60);
+
+        if (dragSpeed > 10) {
+          playWhoosh(dragSpeed);
+        }
+      });
+
+      // Track cursor position for Black Hole effect
+      window.addEventListener('pointermove', (e) => {
+        mousePosition.x = e.clientX;
+        mousePosition.y = e.clientY;
+
+        if (isBlackHoleActive) {
+          const fx = document.getElementById('black-hole-fx');
+          if (fx) {
+            fx.style.left = `${mousePosition.x}px`;
+            fx.style.top = `${mousePosition.y}px`;
+          }
+        }
+      }, { passive: true });
+    }
+
+    /* ==========================================================================
+       MAIN ENGINE & RENDER LOOP
+       ========================================================================== */
+    let lastTime = performance.now();
+
+    function physicsLoop(now) {
+      const delta = Math.min((now - lastTime) / 1000, 0.05);
+      lastTime = now;
+
+      // 1. Black hole attraction & vortex force
+      if (isBlackHoleActive && !isResetting) {
+        applyBlackHoleForces();
+      }
+
+      // 2. Normal physics update if not in reset animation
+      if (!isResetting) {
+        Engine.update(engine, 1000 / 60);
+      }
+
+      // 3. Sync Matter.js physics rigid bodies with DOM elements
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      for (let i = 0; i < physicalItems.length; i++) {
+        const item = physicalItems[i];
+        const { body, el, width, height } = item;
+
+        // Continuous safety clamp: prevent items from permanently leaving screen
+        if (!isResetting) {
+          if (body.position.x < -100) Body.setPosition(body, { x: 50, y: body.position.y });
+          if (body.position.x > w + 100) Body.setPosition(body, { x: w - 50, y: body.position.y });
+          if (body.position.y < -100) Body.setPosition(body, { x: body.position.x, y: 50 });
+          if (body.position.y > h + 100) Body.setPosition(body, { x: body.position.x, y: h - 50 });
+        }
+
+        // Apply 3D accelerated transform to DOM element
+        const x = body.position.x - width / 2;
+        const y = body.position.y - height / 2;
+        el.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0px) rotate(${body.angle.toFixed(4)}rad)`;
+      }
+
+      requestAnimationFrame(physicsLoop);
+    }
+
+    /* ==========================================================================
+       BLACK HOLE SINGULARITY PHYSICS
+       ========================================================================== */
+    function applyBlackHoleForces() {
+      const G = 0.0035; // Gravitational constant
+      const swirlFactor = 0.0018; // Angular orbital velocity
+
+      for (let i = 0; i < physicalItems.length; i++) {
+        const { body } = physicalItems[i];
+        const dx = mousePosition.x - body.position.x;
+        const dy = mousePosition.y - body.position.y;
+        const distSq = dx * dx + dy * dy;
+        const dist = Math.sqrt(distSq);
+
+        if (dist > 15) {
+          // Inward pull (F = G * m / r)
+          const forceMag = (G * body.mass) / Math.max(dist, 40);
+          const pullForce = {
+            x: (dx / dist) * forceMag,
+            y: (dy / dist) * forceMag
+          };
+
+          // Tangential swirl force to create an orbital accretion disk
+          const swirlForce = {
+            x: -(dy / dist) * (swirlFactor * body.mass),
+            y: (dx / dist) * (swirlFactor * body.mass)
+          };
+
+          Body.applyForce(body, body.position, {
+            x: pullForce.x + swirlForce.x,
+            y: pullForce.y + swirlForce.y
+          });
+        }
+      }
+    }
+
+    function toggleBlackHole() {
+      initAudio();
+      isBlackHoleActive = !isBlackHoleActive;
+      const btn = document.getElementById('btn-blackhole');
+      const label = document.getElementById('blackhole-label');
+      const fx = document.getElementById('black-hole-fx');
+
+      if (isBlackHoleActive) {
+        btn.classList.add('active');
+        label.textContent = 'Active Singularity';
+        if (fx) {
+          fx.style.display = 'block';
+          fx.style.left = `${mousePosition.x}px`;
+          fx.style.top = `${mousePosition.y}px`;
+        }
+        showToast('🌀 Black Hole Active — All elements orbit the cursor!');
+      } else {
+        btn.classList.remove('active');
+        label.textContent = 'Black Hole';
+        if (fx) fx.style.display = 'none';
+        showToast('Black Hole Deactivated');
+      }
+    }
+
+    /* ==========================================================================
+       EXPLOSION SHOCKWAVE SYSTEM
+       ========================================================================== */
+    function triggerExplosion(originX, originY) {
+      initAudio();
+      playExplosionSound();
+
+      const cx = originX !== undefined ? originX : window.innerWidth / 2;
+      const cy = originY !== undefined ? originY : window.innerHeight / 2;
+
+      // Create visual shockwave ring
+      const shockwave = document.createElement('div');
+      shockwave.className = 'shockwave';
+      shockwave.style.left = `${cx}px`;
+      shockwave.style.top = `${cy}px`;
+      document.body.appendChild(shockwave);
+      setTimeout(() => shockwave.remove(), 700);
+
+      // Apply explosive radial impulse to each physical body
+      physicalItems.forEach(({ body }) => {
+        const dx = body.position.x - cx;
+        const dy = body.position.y - cy;
+        const dist = Math.hypot(dx, dy) || 1;
+
+        // Force drops off with distance
+        const impulseMagnitude = Math.min(0.28, (45 / dist) * 0.12 + 0.035);
+        const force = {
+          x: (dx / dist) * impulseMagnitude,
+          y: (dy / dist) * impulseMagnitude
+        };
+
+        Body.applyForce(body, body.position, force);
+        // Random rotational torque on explosion
+        Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.35);
+      });
+
+      showToast('💥 BOOM! Blast wave unleashed!');
+    }
+
+    /* ==========================================================================
+       RESET TO NEAT GOOGLE HOMEPAGE LAYOUT (Smooth Interpolation)
+       ========================================================================== */
+    function resetLayout() {
+      initAudio();
+      playResetChime();
+
+      if (isBlackHoleActive) {
+        toggleBlackHole();
+      }
+
+      isResetting = true;
+      const duration = 1100; // ms
+      const startTime = performance.now();
+
+      // Snapshot starting state
+      const startStates = physicalItems.map(({ body }) => ({
+        body,
+        x: body.position.x,
+        y: body.position.y,
+        angle: body.angle
+      }));
+
+      function animateReset(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Cubic ease out
+        const ease = 1 - Math.pow(1 - progress, 3);
+
+        startStates.forEach((item) => {
+          const target = initialTransforms.get(item.body.elementId);
+          if (!target) return;
+
+          const currentX = item.x + (target.x - item.x) * ease;
+          const currentY = item.y + (target.y - item.y) * ease;
+          const currentAngle = item.angle + (0 - item.angle) * ease;
+
+          Body.setPosition(item.body, { x: currentX, y: currentY });
+          Body.setAngle(item.body, currentAngle);
+          Body.setVelocity(item.body, { x: 0, y: 0 });
+          Body.setAngularVelocity(item.body, 0);
+        });
+
+        if (progress < 1) {
+          requestAnimationFrame(animateReset);
+        } else {
+          isResetting = false;
+          // Reset slider values to normal
+          document.getElementById('slider-gravity').value = '1';
+          updateGravityUI(1);
+          engine.gravity.y = 1;
+          showToast('✨ Google layout restored to original position!');
+        }
+      }
+
+      requestAnimationFrame(animateReset);
+    }
+
+    /* ==========================================================================
+       HUD UI CONTROLS & EVENT LISTENERS
+       ========================================================================== */
+    const gravitySlider = document.getElementById('slider-gravity');
+    const bounceSlider = document.getElementById('slider-bounce');
+    const gravityValBadge = document.getElementById('hud-gravity-val');
+    const bounceValBadge = document.getElementById('hud-bounce-val');
+
+    function updateGravityUI(val) {
+      if (val === 0) {
+        gravityValBadge.textContent = '0.0G (Zero G)';
+        gravityValBadge.style.color = '#c084fc';
+      } else if (val < 0) {
+        gravityValBadge.textContent = `${val.toFixed(1)}G (Inverted Float)`;
+        gravityValBadge.style.color = '#38bdf8';
+      } else if (val > 1.8) {
+        gravityValBadge.textContent = `${val.toFixed(1)}G (Super Heavy)`;
+        gravityValBadge.style.color = '#f87171';
+      } else {
+        gravityValBadge.textContent = `${val.toFixed(1)}G (Normal)`;
+        gravityValBadge.style.color = '#8ab4f8';
+      }
+    }
+
+    gravitySlider.addEventListener('input', (e) => {
+      initAudio();
+      const val = parseFloat(e.target.value);
+      engine.gravity.y = val;
+      updateGravityUI(val);
+    });
+
+    bounceSlider.addEventListener('input', (e) => {
+      initAudio();
+      const val = parseFloat(e.target.value);
+      bounceValBadge.textContent = val.toFixed(2);
+      physicalItems.forEach(({ body }) => {
+        body.restitution = val;
+      });
+    });
+
+    function toggleHud() {
+      const hud = document.getElementById('hud-panel');
+      const minBtn = document.getElementById('hud-min-btn');
+      hud.classList.toggle('minimized');
+      minBtn.textContent = hud.classList.contains('minimized') ? '+' : '−';
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast-msg');
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2600);
+    }
+
+    /* ==========================================================================
+       FUNCTIONAL GOOGLE SEARCH & BUTTON ACTIONS
+       ========================================================================== */
+    function executeGoogleSearch() {
+      initAudio();
+      const input = document.getElementById('main-search-input');
+      const query = input ? input.value.trim() : '';
+      if (!query) {
+        showToast('🔍 Please enter a search query in the floating search bar!');
+        if (input) input.focus();
+        return;
+      }
+      showToast(`Searching Google for "${query}"...`);
+      setTimeout(() => {
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+      }, 500);
+    }
+
+    function executeLuckySearch() {
+      initAudio();
+      const input = document.getElementById('main-search-input');
+      const query = input ? input.value.trim() : '';
+      if (query) {
+        window.open(`https://www.google.com/search?btnI=1&q=${encodeURIComponent(query)}`, '_blank');
+      } else {
+        showToast('🎲 Feeling Lucky! Launching zero-gravity confetti blast!');
+        triggerExplosion();
+      }
+    }
+
+    // Enter key submits search even when floating
+    document.getElementById('main-search-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        executeGoogleSearch();
+      }
+    });
+
+    // Voice & Lens mock interactions
+    function handleVoiceClick(e) {
+      e.stopPropagation();
+      initAudio();
+      showToast('🎙️ Voice search listening... (Microphone active)');
+    }
+
+    function handleLensClick(e) {
+      e.stopPropagation();
+      initAudio();
+      showToast('📷 Google Lens activated! Drag image to search.');
+    }
+
+    function handleLinkClick(e, label) {
+      e.preventDefault();
+      e.stopPropagation();
+      initAudio();
+      showToast(`Clicked ${label}`);
+    }
+
+    /* ==========================================================================
+       WINDOW RESIZE RESPONSIVENESS
+       ========================================================================== */
+    let resizeDebounce;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeDebounce);
+      resizeDebounce = setTimeout(() => {
+        createWalls();
+      }, 150);
+    });
+
+    // Start everything when DOM is loaded
+    window.addEventListener('DOMContentLoaded', () => {
+      initPhysics();
+      showToast('🚀 Antigravity Engine Ready: Drag, fling, and explore!');
+    });
+  </script>
+</body>
+</html>

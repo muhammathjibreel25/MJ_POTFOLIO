@@ -45,7 +45,7 @@ export const Skills: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-xs font-mono text-emerald-400 font-semibold tracking-wider">04 //</span>
+            <span className="text-xs font-mono text-lime-400 font-semibold tracking-wider">04 //</span>
             <span className="text-xs font-mono text-slate-400 uppercase tracking-widest">TECHNICAL SKILLS</span>
           </div>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-white tracking-tight">
@@ -64,8 +64,8 @@ export const Skills: React.FC = () => {
           onClick={() => setActiveTab('all')}
           className={`px-4 py-2 rounded-full text-xs font-mono tracking-wider uppercase transition-all ${
             activeTab === 'all'
-              ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-950'
-              : 'bg-white/5 text-slate-300 hover:text-white border border-white/10'
+              ? 'bg-gradient-to-r from-lime-400 to-cyan-400 text-slate-950 font-bold shadow-lg shadow-cyan-950/40'
+              : 'bg-white/5 text-slate-300 hover:text-white border border-white/10 hover:border-white/20'
           }`}
           data-cursor="pointer"
         >
@@ -77,8 +77,8 @@ export const Skills: React.FC = () => {
           onClick={() => setActiveTab('core')}
           className={`px-4 py-2 rounded-full text-xs font-mono tracking-wider uppercase transition-all ${
             activeTab === 'core'
-              ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-950'
-              : 'bg-white/5 text-slate-300 hover:text-white border border-white/10'
+              ? 'bg-emerald-400 text-slate-950 font-bold shadow-lg shadow-emerald-950/40'
+              : 'bg-white/5 text-slate-300 hover:text-emerald-300 border border-white/10 hover:border-emerald-500/30'
           }`}
           data-cursor="pointer"
         >
@@ -90,8 +90,8 @@ export const Skills: React.FC = () => {
           onClick={() => setActiveTab('project')}
           className={`px-4 py-2 rounded-full text-xs font-mono tracking-wider uppercase transition-all ${
             activeTab === 'project'
-              ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-950'
-              : 'bg-white/5 text-slate-300 hover:text-white border border-white/10'
+              ? 'bg-cyan-400 text-slate-950 font-bold shadow-lg shadow-cyan-950/40'
+              : 'bg-white/5 text-slate-300 hover:text-cyan-300 border border-white/10 hover:border-cyan-500/30'
           }`}
           data-cursor="pointer"
         >
@@ -103,8 +103,8 @@ export const Skills: React.FC = () => {
           onClick={() => setActiveTab('learning')}
           className={`px-4 py-2 rounded-full text-xs font-mono tracking-wider uppercase transition-all ${
             activeTab === 'learning'
-              ? 'bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-950'
-              : 'bg-white/5 text-slate-300 hover:text-white border border-white/10'
+              ? 'bg-violet-400 text-slate-950 font-bold shadow-lg shadow-violet-950/40'
+              : 'bg-white/5 text-slate-300 hover:text-violet-300 border border-white/10 hover:border-violet-500/30'
           }`}
           data-cursor="pointer"
         >
@@ -260,8 +260,10 @@ export const Skills: React.FC = () => {
 
         {/* Right Column: Live Technology Inspector Card (5 cols) */}
         <div className="lg:col-span-5 lg:sticky lg:top-28">
-          <div className="rounded-2xl bg-[#0f1118] border border-emerald-500/30 p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="rounded-3xl bg-[#0f1118]/95 border border-cyan-500/40 p-6 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-xl transition-all duration-300">
+            {/* Top Multi-Color Accent */}
+            <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-emerald-400 via-cyan-400 to-violet-500" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
             {/* Inspector Header */}
             <div className="flex items-center justify-between pb-5 border-b border-white/10 mb-6">

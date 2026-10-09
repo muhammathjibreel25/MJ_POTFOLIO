@@ -34,7 +34,7 @@ export const Contact: React.FC = () => {
             <span className="text-xs font-mono text-slate-400 uppercase tracking-widest">GET IN TOUCH</span>
           </div>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-white tracking-tight">
-            Let's build something.
+            Let's build <span className="text-gradient-hero">something.</span>
           </h2>
         </div>
         <p className="text-slate-400 text-sm font-mono max-w-md">
@@ -46,31 +46,33 @@ export const Contact: React.FC = () => {
         {/* Left Column: Direct Info & Channels (5 cols) */}
         <div className="lg:col-span-5 space-y-8">
           {/* Main Direct Email Card */}
-          <div className="p-7 rounded-3xl bg-[#0f1118]/90 border border-white/10 relative overflow-hidden backdrop-blur-md">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="p-7 sm:p-8 rounded-3xl bg-[#0f1118]/90 border border-emerald-500/30 relative overflow-hidden backdrop-blur-xl shadow-2xl hover:border-emerald-400/60 transition-all duration-300">
+            {/* Top Gradient Edge */}
+            <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400" />
+            <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
 
             <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 uppercase tracking-wider mb-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
               <span>DIRECT INQUIRIES</span>
             </div>
 
-            <h3 className="text-xl font-display font-semibold text-white mb-2">
+            <h3 className="text-xl sm:text-2xl font-display font-semibold text-white mb-2">
               Start a Conversation
             </h3>
 
-            <p className="text-xs text-slate-300 font-light leading-relaxed mb-6">
+            <p className="text-xs sm:text-sm text-slate-300 font-light leading-relaxed mb-6">
               Whether you are recruiting for software engineering internships, entry roles, or want to discuss practical web applications, my inbox is open.
             </p>
 
             {/* Email Address & Quick Copy */}
-            <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.03] border border-white/10 mb-4">
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.04] border border-white/10 hover:border-emerald-400/40 mb-4 transition-colors">
               <span className="font-mono text-xs sm:text-sm text-slate-200 truncate select-all">
                 {portfolioConfig.contact.email}
               </span>
               <button
                 type="button"
                 onClick={copyEmailToClipboard}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-mono text-xs border border-emerald-500/30 transition-colors shrink-0 ml-2"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 font-mono text-xs border border-emerald-500/40 transition-colors shrink-0 ml-2 shadow-sm"
                 data-cursor="pointer"
               >
                 {copiedEmail ? (
@@ -99,15 +101,16 @@ export const Contact: React.FC = () => {
               href={portfolioConfig.contact.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="group p-5 rounded-2xl bg-[#0f1118]/80 border border-white/10 hover:border-emerald-500/40 transition-all flex flex-col justify-between"
+              className="group p-5 rounded-2xl bg-[#0f1118]/85 border border-blue-500/20 hover:border-blue-400/60 hover:shadow-[0_15px_35px_rgba(37,99,235,0.2)] transition-all duration-300 flex flex-col justify-between relative overflow-hidden backdrop-blur-md"
               data-cursor="pointer"
             >
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-500 to-cyan-400 opacity-60 group-hover:opacity-100 transition-opacity" />
               <div className="flex items-center justify-between mb-4">
-                <LinkedinIcon className="w-5 h-5 text-slate-400 group-hover:text-emerald-400 transition-colors" />
-                <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                <LinkedinIcon className="w-5 h-5 text-blue-400 group-hover:scale-110 transition-transform" />
+                <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-blue-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
               </div>
               <div>
-                <span className="font-display font-semibold text-white text-sm block">LinkedIn</span>
+                <span className="font-display font-semibold text-white text-sm block group-hover:text-blue-200 transition-colors">LinkedIn</span>
                 <span className="text-[10px] font-mono text-slate-400">Professional Network</span>
               </div>
             </a>
@@ -116,16 +119,17 @@ export const Contact: React.FC = () => {
               href={portfolioConfig.contact.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="group p-5 rounded-2xl bg-[#0f1118]/80 border border-white/10 hover:border-emerald-500/40 transition-all flex flex-col justify-between"
+              className="group p-5 rounded-2xl bg-[#0f1118]/85 border border-violet-500/20 hover:border-violet-400/60 hover:shadow-[0_15px_35px_rgba(139,92,246,0.2)] transition-all duration-300 flex flex-col justify-between relative overflow-hidden backdrop-blur-md"
               data-cursor="pointer"
             >
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-violet-500 to-purple-400 opacity-60 group-hover:opacity-100 transition-opacity" />
               <div className="flex items-center justify-between mb-4">
-                <GithubIcon className="w-5 h-5 text-slate-400 group-hover:text-emerald-400 transition-colors" />
-                <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                <GithubIcon className="w-5 h-5 text-violet-400 group-hover:scale-110 transition-transform" />
+                <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-violet-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
               </div>
               <div>
-                <span className="font-display font-semibold text-white text-sm block">GitHub</span>
-                <span className="text-[10px] font-mono text-slate-400">Code & Repositories</span>
+                <span className="font-display font-semibold text-white text-sm block group-hover:text-violet-200 transition-colors">GitHub</span>
+                <span className="text-[10px] font-mono text-slate-400">Code &amp; Repositories</span>
               </div>
             </a>
           </div>
@@ -135,13 +139,17 @@ export const Contact: React.FC = () => {
         <div className="lg:col-span-7">
           <form
             onSubmit={handleSendMessage}
-            className="p-8 sm:p-10 rounded-3xl bg-[#0f1118]/80 border border-white/10 backdrop-blur-md space-y-6 shadow-2xl"
+            className="p-8 sm:p-10 rounded-3xl bg-[#0f1118]/90 border border-cyan-500/25 hover:border-cyan-400/40 backdrop-blur-xl space-y-6 shadow-2xl relative overflow-hidden transition-all duration-300"
           >
+            {/* Top Gradient Edge */}
+            <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400" />
+
             <div className="flex items-center justify-between pb-4 border-b border-white/10">
-              <span className="text-xs font-mono uppercase tracking-widest text-slate-400 font-semibold">
+              <span className="text-xs font-mono uppercase tracking-widest text-slate-300 font-semibold flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
                 SEND A MESSAGE DIRECTLY
               </span>
-              <span className="text-[10px] font-mono text-emerald-400">
+              <span className="text-[10px] font-mono text-cyan-400">
                 Direct Dispatch (Mailto)
               </span>
             </div>
@@ -158,7 +166,7 @@ export const Contact: React.FC = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Alex Chen"
-                  className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 focus:border-emerald-400 text-white text-sm font-sans focus:outline-none focus:ring-1 focus:ring-emerald-400 transition-colors placeholder:text-slate-400"
+                  className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 focus:border-cyan-400 text-white text-sm font-sans focus:outline-none focus:ring-1 focus:ring-cyan-400 transition-colors placeholder:text-slate-400"
                 />
               </div>
 
@@ -173,7 +181,7 @@ export const Contact: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="alex@company.com"
-                  className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 focus:border-emerald-400 text-white text-sm font-sans focus:outline-none focus:ring-1 focus:ring-emerald-400 transition-colors placeholder:text-slate-400"
+                  className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 focus:border-cyan-400 text-white text-sm font-sans focus:outline-none focus:ring-1 focus:ring-cyan-400 transition-colors placeholder:text-slate-400"
                 />
               </div>
             </div>
@@ -189,13 +197,13 @@ export const Contact: React.FC = () => {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Hi Muhammath Jibreel, we came across your projects and would like to discuss an opportunity..."
-                className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 focus:border-emerald-400 text-white text-sm font-sans focus:outline-none focus:ring-1 focus:ring-emerald-400 transition-colors placeholder:text-slate-400 resize-none"
+                className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 focus:border-cyan-400 text-white text-sm font-sans focus:outline-none focus:ring-1 focus:ring-cyan-400 transition-colors placeholder:text-slate-400 resize-none"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full flex items-center justify-center gap-3 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono text-xs font-semibold tracking-wider uppercase transition-all shadow-[0_0_25px_rgba(16,185,129,0.3)] hover:shadow-[0_0_35px_rgba(16,185,129,0.5)] transform hover:-translate-y-0.5"
+              className="w-full flex items-center justify-center gap-3 py-4 rounded-xl bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 hover:from-emerald-300 hover:via-teal-300 hover:to-cyan-300 text-slate-950 font-mono text-xs font-bold tracking-wider uppercase transition-all shadow-[0_0_25px_rgba(16,185,129,0.35)] hover:shadow-[0_0_35px_rgba(56,189,248,0.5)] transform hover:-translate-y-0.5"
               data-cursor="pointer"
             >
               <span>Launch Email Client</span>

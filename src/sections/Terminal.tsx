@@ -82,7 +82,7 @@ export const Terminal: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-xs font-mono text-emerald-400 font-semibold tracking-wider">07 //</span>
+            <span className="text-xs font-mono text-cyan-400 font-semibold tracking-wider">07 //</span>
             <span className="text-xs font-mono text-slate-400 uppercase tracking-widest">DEVELOPER CONSOLE</span>
           </div>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-white tracking-tight">
@@ -94,16 +94,19 @@ export const Terminal: React.FC = () => {
         </p>
       </div>
 
-      {/* Terminal Container */}
-      <div className="rounded-3xl bg-[#090b10] border border-white/15 overflow-hidden shadow-2xl backdrop-blur-md">
+      {/* Terminal Container with High-Tech Styling */}
+      <div className="rounded-3xl bg-[#090b10]/95 border border-cyan-500/30 overflow-hidden shadow-2xl backdrop-blur-xl relative transition-all duration-300 hover:border-cyan-400/50 hover:shadow-[0_25px_60px_-15px_rgba(56,189,248,0.18)]">
+        {/* Top Gradient Edge */}
+        <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-emerald-400 via-cyan-400 to-violet-500" />
+
         {/* Terminal Title Bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#0d1017]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#0d1017]/90">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-rose-500/80" />
-            <span className="w-3 h-3 rounded-full bg-amber-500/80" />
-            <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
-            <span className="ml-3 font-mono text-xs text-slate-400 hidden sm:inline">
-              muhammath-jibreel@portfolio:~ (zsh)
+            <span className="w-3 h-3 rounded-full bg-rose-500/80 shadow-sm" />
+            <span className="w-3 h-3 rounded-full bg-amber-500/80 shadow-sm" />
+            <span className="w-3 h-3 rounded-full bg-emerald-500/80 shadow-sm" />
+            <span className="ml-3 font-mono text-xs text-slate-300 hidden sm:inline">
+              jibreel@portfolio:~ <span className="text-cyan-400 font-semibold">(zsh)</span>
             </span>
           </div>
 
@@ -111,18 +114,18 @@ export const Terminal: React.FC = () => {
             <button
               type="button"
               onClick={copyTerminalHistory}
-              className="flex items-center gap-1.5 text-[11px] font-mono text-slate-400 hover:text-white px-2.5 py-1 rounded bg-white/5 border border-white/10 transition-colors"
+              className="flex items-center gap-1.5 text-[11px] font-mono text-slate-300 hover:text-cyan-300 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:border-cyan-500/30 transition-colors shadow-sm"
               title="Copy session output"
               data-cursor="pointer"
             >
               {copied ? (
                 <>
-                  <Check className="w-3 h-3 text-emerald-400" />
-                  <span className="text-emerald-400">Copied</span>
+                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="text-emerald-400 font-medium">Copied</span>
                 </>
               ) : (
                 <>
-                  <Copy className="w-3 h-3" />
+                  <Copy className="w-3.5 h-3.5" />
                   <span>Copy Log</span>
                 </>
               )}
@@ -131,18 +134,18 @@ export const Terminal: React.FC = () => {
             <button
               type="button"
               onClick={() => handleCommand('clear')}
-              className="flex items-center gap-1 text-[11px] font-mono text-slate-400 hover:text-white px-2.5 py-1 rounded bg-white/5 border border-white/10 transition-colors"
+              className="flex items-center gap-1.5 text-[11px] font-mono text-slate-300 hover:text-white px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 transition-colors shadow-sm"
               title="Clear screen"
               data-cursor="pointer"
             >
-              <RefreshCw className="w-3 h-3" />
+              <RefreshCw className="w-3.5 h-3.5" />
               <span>Clear</span>
             </button>
           </div>
         </div>
 
         {/* Quick Command Chips */}
-        <div className="px-6 py-3 border-b border-white/5 bg-[#0b0e14]/50 flex items-center gap-2 overflow-x-auto">
+        <div className="px-6 py-3 border-b border-white/5 bg-[#0b0e14]/60 flex items-center gap-2 overflow-x-auto">
           <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest shrink-0">
             Quick Prompts:
           </span>
@@ -151,7 +154,7 @@ export const Terminal: React.FC = () => {
               key={cmd}
               type="button"
               onClick={() => handleCommand(cmd)}
-              className="px-2.5 py-1 rounded-md bg-white/5 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 font-mono text-xs border border-white/10 hover:border-emerald-500/30 transition-colors shrink-0"
+              className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-cyan-500/20 text-slate-300 hover:text-cyan-300 font-mono text-xs border border-white/10 hover:border-cyan-400/40 transition-all shrink-0 shadow-sm"
               data-cursor="pointer"
             >
               ${cmd}

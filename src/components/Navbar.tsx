@@ -69,13 +69,13 @@ export const Navbar: React.FC<NavbarProps> = ({ scrollProgress }) => {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? 'py-3.5 bg-[#08090d]/80 backdrop-blur-md border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.5)]'
+            ? 'py-3.5 bg-[#08090d]/85 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.6)]'
             : 'py-6 bg-transparent'
         }`}
       >
-        {/* Top Scroll Indicator Line */}
+        {/* Top Multi-Color Scroll Indicator Line */}
         <div
-          className="absolute top-0 left-0 h-[2px] bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 transition-all duration-100 ease-out z-50"
+          className="absolute top-0 left-0 h-[2.5px] bg-gradient-to-r from-lime-400 via-cyan-400 to-violet-500 transition-all duration-100 ease-out z-50 shadow-[0_0_10px_rgba(56,189,248,0.8)]"
           style={{ width: `${scrollProgress}%` }}
         />
 
@@ -83,20 +83,20 @@ export const Navbar: React.FC<NavbarProps> = ({ scrollProgress }) => {
           {/* Brand Logo */}
           <a
             href="#home"
-            className="group flex items-center gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 rounded-lg p-1 -m-1"
+            className="group flex items-center gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-lg p-1 -m-1"
             data-cursor="pointer"
           >
-            <div className="relative flex items-center justify-center w-9 h-8 rounded-lg bg-white/5 border border-white/10 group-hover:border-emerald-500/50 transition-colors px-1.5">
-              <span className="font-display font-bold text-sm tracking-tight text-white group-hover:text-emerald-400 transition-colors leading-none">
+            <div className="relative flex items-center justify-center w-9 h-8 rounded-lg bg-gradient-to-br from-white/10 to-white/5 border border-white/15 group-hover:border-cyan-400/60 transition-all px-1.5 shadow-sm group-hover:shadow-[0_0_15px_rgba(56,189,248,0.4)]">
+              <span className="font-display font-bold text-sm tracking-tight text-white group-hover:text-cyan-300 transition-colors leading-none">
                 MJ
               </span>
               <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-lime-400" />
               </span>
             </div>
             <div className="flex flex-col">
-              <span className="font-display font-bold tracking-widest text-sm text-slate-100 group-hover:text-white transition-colors">
+              <span className="font-display font-bold tracking-widest text-sm text-slate-100 group-hover:text-cyan-200 transition-colors">
                 {portfolioConfig.brandName}
               </span>
               <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
@@ -106,7 +106,7 @@ export const Navbar: React.FC<NavbarProps> = ({ scrollProgress }) => {
           </a>
 
           {/* Desktop Nav Items */}
-          <nav className="hidden md:flex items-center gap-1 px-4 py-1.5 rounded-full bg-[#0f1118]/70 border border-white/10 backdrop-blur-md shadow-inner">
+          <nav className="hidden md:flex items-center gap-1 px-4 py-1.5 rounded-full bg-[#0f1118]/80 border border-white/10 backdrop-blur-xl shadow-inner">
             {navLinks.map((link) => {
               const isActive = activeSection === link.href.substring(1);
               return (
@@ -119,8 +119,8 @@ export const Navbar: React.FC<NavbarProps> = ({ scrollProgress }) => {
                   }}
                   className={`relative px-4 py-1.5 text-xs font-mono tracking-wider transition-all duration-200 rounded-full ${
                     isActive
-                      ? 'text-emerald-300 font-semibold bg-white/5 shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                      ? 'text-cyan-300 font-semibold bg-white/10 shadow-sm border border-cyan-400/30'
+                      : 'text-slate-400 hover:text-slate-100 hover:bg-white/5'
                   }`}
                   data-cursor="pointer"
                 >
@@ -138,11 +138,11 @@ export const Navbar: React.FC<NavbarProps> = ({ scrollProgress }) => {
                 e.preventDefault();
                 handleLinkClick('#contact');
               }}
-              className="group relative inline-flex items-center gap-2 px-4 py-2 text-xs font-mono font-medium text-emerald-300 bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-500/30 hover:border-emerald-400/60 rounded-full transition-all duration-200 shadow-[0_0_15px_rgba(16,185,129,0.1)] hover:shadow-[0_0_20px_rgba(16,185,129,0.25)]"
+              className="group relative inline-flex items-center gap-2 px-4 py-2 text-xs font-mono font-medium text-cyan-300 bg-gradient-to-r from-cyan-950/50 via-slate-900 to-violet-950/50 hover:from-cyan-900/60 hover:to-violet-900/60 border border-cyan-500/30 hover:border-cyan-400/60 rounded-full transition-all duration-200 shadow-[0_0_15px_rgba(56,189,248,0.15)] hover:shadow-[0_0_25px_rgba(56,189,248,0.35)]"
               data-cursor="pointer"
             >
               <span>Let's Talk</span>
-              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform text-cyan-400" />
             </a>
           </div>
 
@@ -150,7 +150,7 @@ export const Navbar: React.FC<NavbarProps> = ({ scrollProgress }) => {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden relative p-2 text-slate-300 hover:text-white rounded-lg bg-white/5 border border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+            className="md:hidden relative p-2 text-slate-300 hover:text-white rounded-lg bg-white/5 border border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
             aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileMenuOpen}
           >

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useScrollProgress } from './hooks/useScrollProgress';
 import { CustomCursor } from './components/CustomCursor';
+import { InteractiveBackground } from './components/InteractiveBackground';
 import { Navbar } from './components/Navbar';
 import { Hero } from './sections/Hero';
 import { About } from './sections/About';
@@ -27,7 +28,10 @@ export const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[#08090d] text-slate-100 selection:bg-emerald-500/20 selection:text-emerald-300 font-sans">
+    <div className="relative min-h-screen bg-[#08090d] text-slate-100 selection:bg-lime-400 selection:text-slate-950 font-sans">
+      {/* Live Interactive Background */}
+      <InteractiveBackground />
+
       {/* Custom Desktop Cursor */}
       <CustomCursor />
 

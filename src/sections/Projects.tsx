@@ -23,7 +23,7 @@ export const Projects: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-6">
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-xs font-mono text-emerald-400 font-semibold tracking-wider">03 //</span>
+            <span className="text-xs font-mono text-violet-400 font-semibold tracking-wider">03 //</span>
             <span className="text-xs font-mono text-slate-400 uppercase tracking-widest">SELECTED WORK</span>
           </div>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-white tracking-tight">
@@ -37,113 +37,141 @@ export const Projects: React.FC = () => {
 
       {/* Personal Projects List (Only Native Bites Farming & AI Precision Agriculture) */}
       <div className="space-y-16">
-        {projectsData.map((project) => (
-          <article
-            key={project.id}
-            data-cursor="explore"
-            onClick={() => setSelectedProject(project)}
-            className="group relative rounded-3xl bg-[#0f1118]/80 border border-white/10 hover:border-emerald-500/40 backdrop-blur-md p-6 sm:p-10 lg:p-12 transition-all duration-300 hover:shadow-[0_20px_50px_-15px_rgba(16,185,129,0.15)] cursor-pointer overflow-hidden"
-          >
-            {/* Ambient Background Glow on Hover */}
-            <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-500/5 group-hover:bg-emerald-500/10 rounded-full blur-3xl pointer-events-none transition-all duration-300" />
+        {projectsData.map((project) => {
+          const isNativeBites = project.id === 'native-bites';
+          const themeAccent = isNativeBites ? 'emerald' : 'cyan';
+          const badgeClass = isNativeBites
+            ? 'text-emerald-300 bg-emerald-950/70 border-emerald-500/40'
+            : 'text-cyan-300 bg-cyan-950/70 border-cyan-500/40';
+          const topLineClass = isNativeBites
+            ? 'bg-gradient-to-r from-emerald-400 via-teal-400 to-amber-400'
+            : 'bg-gradient-to-r from-cyan-400 via-sky-400 to-violet-500';
+          const cardHoverBorder = isNativeBites
+            ? 'hover:border-emerald-400/50 hover:shadow-[0_25px_60px_-15px_rgba(16,185,129,0.22)]'
+            : 'hover:border-cyan-400/50 hover:shadow-[0_25px_60px_-15px_rgba(56,189,248,0.22)]';
+          const titleHoverColor = isNativeBites ? 'group-hover:text-emerald-300' : 'group-hover:text-cyan-300';
+          const linkHoverColor = isNativeBites ? 'text-emerald-400 group-hover:text-emerald-300' : 'text-cyan-400 group-hover:text-cyan-300';
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-              {/* Left Column: Project Narrative & Details (5 cols) */}
-              <div className="lg:col-span-5 flex flex-col justify-between h-full space-y-6">
-                <div>
-                  <div className="flex items-center justify-between gap-4 mb-4">
-                    <span className="font-mono text-xs text-emerald-400 font-semibold px-2.5 py-1 rounded bg-emerald-950/60 border border-emerald-500/30">
-                      PROJECT {project.number}
-                    </span>
-                    <span className="font-mono text-xs text-slate-400">
-                      {project.year} • {project.category}
-                    </span>
-                  </div>
+          return (
+            <article
+              key={project.id}
+              data-cursor="explore"
+              onClick={() => setSelectedProject(project)}
+              className={`group relative rounded-3xl bg-[#0f1118]/90 border border-white/10 backdrop-blur-xl p-6 sm:p-10 lg:p-12 transition-all duration-300 ${cardHoverBorder} cursor-pointer overflow-hidden shadow-2xl`}
+            >
+              {/* Top Colored Accent Edge */}
+              <div className={`absolute top-0 left-0 right-0 h-[2.5px] ${topLineClass}`} />
 
-                  <h3 className="text-3xl sm:text-4xl font-display font-bold text-white group-hover:text-emerald-300 transition-colors mb-3">
-                    {project.title}
-                  </h3>
+              {/* Ambient Background Glow on Hover */}
+              <div
+                className={`absolute top-0 right-1/4 w-96 h-96 ${
+                  isNativeBites ? 'bg-emerald-500/10' : 'bg-cyan-500/10'
+                } group-hover:scale-125 rounded-full blur-3xl pointer-events-none transition-all duration-500`}
+              />
 
-                  <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-light mb-6">
-                    {project.description}
-                  </p>
-
-                  {/* Key Highlights */}
-                  <div className="space-y-2 mb-6 text-xs text-slate-400">
-                    {project.features.slice(0, 3).map((feat, idx) => (
-                      <div key={idx} className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/80 shrink-0" />
-                        <span className="truncate">{feat}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Tech Pills & Actions */}
-                <div className="space-y-6">
-                  <div className="flex flex-wrap gap-2">
-                    {project.technologies.map((tech) => (
-                      <span
-                        key={tech}
-                        className="px-2.5 py-1 rounded text-xs font-mono text-slate-300 bg-white/[0.04] border border-white/10 group-hover:border-white/20 transition-colors"
-                      >
-                        {tech}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
+                {/* Left Column: Project Narrative & Details (5 cols) */}
+                <div className="lg:col-span-5 flex flex-col justify-between h-full space-y-6">
+                  <div>
+                    <div className="flex items-center justify-between gap-4 mb-4">
+                      <span className={`font-mono text-xs font-semibold px-3 py-1 rounded-full border shadow-sm ${badgeClass}`}>
+                        PROJECT {project.number}
                       </span>
-                    ))}
+                      <span className="font-mono text-xs text-slate-400">
+                        {project.year} • {project.category}
+                      </span>
+                    </div>
+
+                    <h3 className={`text-3xl sm:text-4xl font-display font-bold text-white ${titleHoverColor} transition-colors mb-3`}>
+                      {project.title}
+                    </h3>
+
+                    <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-light mb-6">
+                      {project.description}
+                    </p>
+
+                    {/* Key Highlights */}
+                    <div className="space-y-2.5 mb-6 text-xs text-slate-300">
+                      {project.features.slice(0, 3).map((feat, idx) => (
+                        <div key={idx} className="flex items-center gap-2.5">
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              isNativeBites ? 'bg-emerald-400' : 'bg-cyan-400'
+                            } shrink-0`}
+                          />
+                          <span className="truncate">{feat}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                    <span className="inline-flex items-center gap-2 text-xs font-mono font-medium text-emerald-400 group-hover:text-emerald-300">
-                      <span>View Case Study</span>
-                      <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                    </span>
+                  {/* Tech Pills & Actions */}
+                  <div className="space-y-6">
+                    <div className="flex flex-wrap gap-2">
+                      {project.technologies.map((tech) => (
+                        <span
+                          key={tech}
+                          className="px-2.5 py-1 rounded-lg text-xs font-mono text-slate-200 bg-white/[0.04] border border-white/10 group-hover:border-white/20 transition-colors shadow-sm"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
 
-                    <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
-                      {project.liveUrl && (
-                        <a
-                          href={project.liveUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2 rounded-lg bg-white/5 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 border border-white/10 transition-colors"
-                          title="View Live Demo"
-                          data-cursor="pointer"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      )}
-                      {project.githubUrl && (
-                        <a
-                          href={project.githubUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 transition-colors"
-                          title="View GitHub Repository"
-                          data-cursor="pointer"
-                        >
-                          <GithubIcon className="w-4 h-4" />
-                        </a>
-                      )}
+                    <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                      <span className={`inline-flex items-center gap-2 text-xs font-mono font-medium ${linkHoverColor}`}>
+                        <span>View Case Study</span>
+                        <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                      </span>
+
+                      <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
+                        {project.liveUrl && (
+                          <a
+                            href={project.liveUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 rounded-lg bg-white/5 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 border border-white/10 transition-colors"
+                            title="View Live Demo"
+                            data-cursor="pointer"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        )}
+                        {project.githubUrl && (
+                          <a
+                            href={project.githubUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 transition-colors"
+                            title="View GitHub Repository"
+                            data-cursor="pointer"
+                          >
+                            <GithubIcon className="w-4 h-4" />
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Right Column: Abstract UI Representation (7 cols) */}
-              <div className="lg:col-span-7">
-                <div className="relative rounded-2xl bg-[#090b10] border border-white/15 p-4 sm:p-6 overflow-hidden group-hover:border-emerald-500/40 transition-colors shadow-2xl">
-                  {/* Browser Chrome Bar for Web Projects */}
-                  <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10 text-[11px] font-mono text-slate-400">
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-3 h-3 rounded-full bg-rose-500/70" />
-                      <span className="w-3 h-3 rounded-full bg-amber-500/70" />
-                      <span className="w-3 h-3 rounded-full bg-emerald-500/70" />
+                {/* Right Column: Abstract UI Representation (7 cols) */}
+                <div className="lg:col-span-7">
+                  <div className={`relative rounded-2xl bg-[#090b10] border border-white/15 p-4 sm:p-6 overflow-hidden ${
+                    isNativeBites ? 'group-hover:border-emerald-500/40' : 'group-hover:border-cyan-500/40'
+                  } transition-colors shadow-2xl`}>
+                    {/* Browser Chrome Bar for Web Projects */}
+                    <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10 text-[11px] font-mono text-slate-400">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3 h-3 rounded-full bg-rose-500/70" />
+                        <span className="w-3 h-3 rounded-full bg-amber-500/70" />
+                        <span className="w-3 h-3 rounded-full bg-emerald-500/70" />
+                      </div>
+                      <div className="px-4 py-1 rounded-md bg-white/5 border border-white/10 text-slate-200 text-[10px] flex items-center gap-2">
+                        <Globe className={`w-3 h-3 ${isNativeBites ? 'text-emerald-400' : 'text-cyan-400'}`} />
+                        <span>{project.liveUrl ? 'https://nativebites.neocities.org' : 'AI Precision Agriculture Web App'}</span>
+                      </div>
+                      <span className="text-[10px] text-slate-400">Verified Web Build</span>
                     </div>
-                    <div className="px-4 py-1 rounded-md bg-white/5 border border-white/10 text-slate-300 text-[10px] flex items-center gap-2">
-                      <Globe className="w-3 h-3 text-emerald-400" />
-                      <span>{project.liveUrl ? 'https://nativebites.neocities.org' : 'AI Precision Agriculture Web App'}</span>
-                    </div>
-                    <span className="text-[10px] text-slate-400">Verified Web Build</span>
-                  </div>
 
                   {/* Custom Representation for Native Bites */}
                   {project.id === 'native-bites' && (
@@ -248,7 +276,8 @@ export const Projects: React.FC = () => {
               </div>
             </div>
           </article>
-        ))}
+        );
+      })}
       </div>
 
       {/* DEDICATED ONGOING FRONTEND DEVELOPMENT WORK */}
@@ -270,11 +299,13 @@ export const Projects: React.FC = () => {
           </span>
         </div>
 
-        <div className="rounded-3xl bg-[#0c0e15] border border-cyan-500/30 p-6 sm:p-10 relative overflow-hidden shadow-2xl">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="rounded-3xl bg-[#0c0e15]/95 border border-cyan-500/35 hover:border-cyan-400/60 p-6 sm:p-10 relative overflow-hidden shadow-2xl transition-all duration-300 hover:shadow-[0_25px_60px_-15px_rgba(6,182,212,0.22)] backdrop-blur-xl">
+          {/* Top Multi-Color Accent Edge */}
+          <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-cyan-400 via-sky-400 to-violet-500" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
           {/* Context Banner */}
-          <div className="p-4 rounded-xl bg-cyan-950/30 border border-cyan-500/20 text-xs text-cyan-200 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="p-4 rounded-xl bg-cyan-950/40 border border-cyan-500/30 text-xs text-cyan-200 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
             <div className="flex items-center gap-2">
               <Code2 className="w-4 h-4 text-cyan-400 shrink-0" />
               <span>
@@ -286,7 +317,7 @@ export const Projects: React.FC = () => {
                 href={frontendWorkData.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-mono text-xs border border-cyan-500/40 transition-colors shrink-0"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-mono text-xs border border-cyan-500/40 transition-colors shrink-0 shadow-sm"
               >
                 <GithubIcon className="w-3.5 h-3.5" />
                 <span>View Repository</span>
